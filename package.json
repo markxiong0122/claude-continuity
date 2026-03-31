@@ -1,12 +1,38 @@
 {
   "name": "claude-continuity",
-  "module": "index.ts",
+  "version": "0.1.0",
+  "description": "Sync Claude Code sessions, config, and skills across devices",
+  "module": "src/index.ts",
   "type": "module",
-  "private": true,
   "bin": {
     "claude-continuity": "./src/index.ts",
     "cc": "./src/index.ts"
   },
+  "scripts": {
+    "test": "bun test",
+    "start": "bun run src/index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/markxiong0122/claude-continuity.git"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "sync",
+    "session",
+    "config",
+    "skills",
+    "cross-device",
+    "developer-tools",
+    "cli"
+  ],
+  "author": "Mark Xiong <markxiong0122@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/markxiong0122/claude-continuity/issues"
+  },
+  "homepage": "https://github.com/markxiong0122/claude-continuity#readme",
   "devDependencies": {
     "@types/bun": "latest",
     "@types/node": "^25.5.0"
