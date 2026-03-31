@@ -9,4 +9,20 @@ program
 
 // Commands will be added in subsequent tasks
 
+program
+  .command("deps")
+  .description("Show missing dependencies from synced skills")
+  .action(async () => {
+    const { depsCommand } = await import("./commands/deps");
+    await depsCommand();
+  });
+
+program
+  .command("restore")
+  .description("Show sync history for rollback")
+  .action(async () => {
+    const { restoreCommand } = await import("./commands/restore");
+    await restoreCommand();
+  });
+
 program.parse();
