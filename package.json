@@ -1,0 +1,21 @@
+{
+  "name": "claude-continuity",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "bin": {
+    "claude-continuity": "./src/index.ts",
+    "cc": "./src/index.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/node": "^25.5.0"
+  },
+  "peerDependencies": {
+    "typescript": "^6.0.2"
+  },
+  "dependencies": {
+    "commander": "^14.0.3",
+    "yaml": "^2.8.3"
+  }
+}
