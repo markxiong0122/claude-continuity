@@ -1,3 +1,4 @@
+#!/usr/bin/env bun
 import { Command } from "commander";
 import { setQuiet } from "./utils/logger";
 
@@ -60,6 +61,20 @@ program
   .action(async () => {
     const { restoreCommand } = await import("./commands/restore");
     await restoreCommand();
+  });
+
+program
+  .command("sync-plugins")
+  .description("Accept or decline pending plugin changes from other devices")
+  .option("--accept <ids...>", "Plugin IDs to accept/enable")
+  .option("--decline <ids...>", "Plugin IDs to decline (won't ask again)")
+  .option("--remove <ids...>", "Plugin IDs to remove locally (deleted on remote)")
+  .option("--keep <ids...>", "Plugin IDs to keep locally (won't ask again)")
+  .option("--all", "Accept all new plugins and remove all deleted ones")
+  .option("--none", "Decline all new plugins and keep all deleted ones")
+  .action(async (options) => {
+    const { syncPluginsCommand } = await import("./commands/sync-plugins");
+    await syncPluginsCommand(options);
   });
 
 program.parse();

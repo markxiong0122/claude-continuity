@@ -4,16 +4,22 @@ import { join } from "path";
 const PULL_COMMAND = "claude-continuity pull --quiet";
 const PUSH_COMMAND = "claude-continuity push --quiet --background";
 
-interface Hook {
+interface HookCommand {
+  type: "command";
   command: string;
   timeout?: number;
 }
 
+interface HookEntry {
+  matcher: string;
+  hooks: HookCommand[];
+}
+
 interface Settings {
   hooks?: {
-    SessionStart?: Hook[];
-    Stop?: Hook[];
-    [key: string]: Hook[] | undefined;
+    SessionStart?: HookEntry[];
+    Stop?: HookEntry[];
+    [key: string]: HookEntry[] | undefined;
   };
   [key: string]: unknown;
 }
@@ -33,14 +39,20 @@ export class HookInstaller {
 
     // Remove existing claude-continuity hooks (prevent duplicates)
     settings.hooks.SessionStart = settings.hooks.SessionStart.filter(
-      (h) => !h.command.includes("claude-continuity"),
+      (h) => !h.hooks?.some((c) => c.command.includes("claude-continuity")),
     );
     settings.hooks.Stop = settings.hooks.Stop.filter(
-      (h) => !h.command.includes("claude-continuity"),
+      (h) => !h.hooks?.some((c) => c.command.includes("claude-continuity")),
     );
 
-    settings.hooks.SessionStart.push({ command: PULL_COMMAND, timeout: 10000 });
-    settings.hooks.Stop.push({ command: PUSH_COMMAND, timeout: 5000 });
+    settings.hooks.SessionStart.push({
+      matcher: "",
+      hooks: [{ type: "command", command: PULL_COMMAND, timeout: 10000 }],
+    });
+    settings.hooks.Stop.push({
+      matcher: "",
+      hooks: [{ type: "command", command: PUSH_COMMAND, timeout: 5000 }],
+    });
     this.writeSettings(settings);
   }
 
@@ -48,12 +60,12 @@ export class HookInstaller {
     const settings = this.readSettings();
     if (settings.hooks?.SessionStart) {
       settings.hooks.SessionStart = settings.hooks.SessionStart.filter(
-        (h) => !h.command.includes("claude-continuity"),
+        (h) => !h.hooks?.some((c) => c.command.includes("claude-continuity")),
       );
     }
     if (settings.hooks?.Stop) {
       settings.hooks.Stop = settings.hooks.Stop.filter(
-        (h) => !h.command.includes("claude-continuity"),
+        (h) => !h.hooks?.some((c) => c.command.includes("claude-continuity")),
       );
     }
     this.writeSettings(settings);
@@ -62,7 +74,7 @@ export class HookInstaller {
   isInstalled(): boolean {
     const settings = this.readSettings();
     return (settings.hooks?.SessionStart ?? []).some((h) =>
-      h.command.includes("claude-continuity"),
+      h.hooks?.some((c) => c.command.includes("claude-continuity")),
     );
   }
 

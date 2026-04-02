@@ -42,7 +42,22 @@ export async function pullCommand(options: PullOptions = {}): Promise<void> {
   const sessions = new SessionSync(CLAUDE_HOME, CC_REPO);
   const sessionResult = sessions.pullFromRepo();
   const config = new ConfigSync(CLAUDE_HOME, CC_REPO);
-  config.pullFromRepo();
+  const configResult = config.pullFromRepo();
+
+  // Plugin sync notifications (always output, even in quiet mode, so Claude sees it)
+  if (configResult.pendingPlugins) {
+    const { newFromRemote, deletedOnRemote } = configResult.pendingPlugins;
+    const parts: string[] = [];
+    if (newFromRemote.length > 0) {
+      parts.push(`${newFromRemote.length} new plugin(s) from other device: ${newFromRemote.map((p) => p.id).join(", ")}`);
+    }
+    if (deletedOnRemote.length > 0) {
+      parts.push(`${deletedOnRemote.length} plugin(s) deleted on other device: ${deletedOnRemote.map((p) => p.id).join(", ")}`);
+    }
+    // Use console.log directly — this must be visible even in quiet mode
+    // so Claude Code can see the hook output and ask the user
+    console.log(`⚠ Plugin sync: ${parts.join(". ")}. Ask the user which plugins to sync, then run: claude-continuity sync-plugins --accept <ids> --decline <ids> --remove <ids> --keep <ids>`);
+  }
   const skills = new SkillsSync(CLAUDE_HOME, CC_REPO);
   const skillsResult = skills.pullFromRepo();
 

@@ -16,3 +16,5 @@ export const CC_REPO = join(CC_HOME, "repo");
 export const CC_LOCK = join(CC_HOME, ".push.lock");
 export const CC_CONFIG = join(CC_HOME, "config.json");
 export const CC_PENDING_PUSH = join(CC_HOME, ".pending-push");
+export const CC_PENDING_PLUGINS = join(CC_HOME, "pending-plugins.json");
+export const CC_PLUGIN_DECISIONS = join(CC_HOME, "plugin-decisions.json");
