@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readdirSync, copyFileSync } from "fs";
+import { existsSync, mkdirSync, readdirSync, copyFileSync, lstatSync, readlinkSync, symlinkSync } from "fs";
 import { join } from "path";
 
 const SYNC_DIRS = ["skills", "agents", "hooks", "plugins"];
@@ -39,7 +39,11 @@ export class SkillsSync {
       const srcPath = join(src, entry.name);
       const dstPath = join(dst, entry.name);
       const relPath = `${prefix}/${entry.name}`;
-      if (entry.isDirectory()) {
+      const stat = lstatSync(srcPath);
+      if (stat.isSymbolicLink()) {
+        // Skip symlinks — they point to local plugin caches that won't exist on other machines
+        continue;
+      } else if (stat.isDirectory()) {
         this.copyDirRecursive(srcPath, dstPath, result, relPath);
       } else {
         copyFileSync(srcPath, dstPath);
@@ -54,7 +58,10 @@ export class SkillsSync {
       const srcPath = join(src, entry.name);
       const dstPath = join(dst, entry.name);
       const relPath = `${prefix}/${entry.name}`;
-      if (entry.isDirectory()) {
+      const stat = lstatSync(srcPath);
+      if (stat.isSymbolicLink()) {
+        continue;
+      } else if (stat.isDirectory()) {
         this.mergeDirAdditive(srcPath, dstPath, result, relPath);
       } else if (!existsSync(dstPath)) {
         copyFileSync(srcPath, dstPath);
